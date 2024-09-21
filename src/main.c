@@ -200,16 +200,12 @@ void repl() {
 
 void hex(const char *sub, const char *val) {
     if (strncmp(sub, "dec", 3) == 0) {
-      printf("----------------\n");
       printf("%s => \033[32m%llu\033[0m\n", val, conv_hex_to_dec(val));
-      printf("----------------\n");
       return;
 
     } else if (strncmp(sub, "bin", 3) == 0) {
       char *res = conv_hex_to_bin(val);
-      printf("----------------\n");
       printf("%s => \033[32m%s\033[0m\n", val, res);
-      printf("----------------\n");
       free(res);
       return;
     } else {
@@ -220,16 +216,12 @@ void hex(const char *sub, const char *val) {
 void dec(const char *sub, const char *val) {
     if (strncmp(sub, "hex", 3) == 0) {
       char *res = conv_dec_to_hex(val);
-      printf("----------------\n");
       printf("%llu => \033[32m%s\033[0m\n", strtoull(val, NULL, 10), res);
-      printf("----------------\n");
       free(res);
       return;
     } else if (strncmp(sub, "bin", 3) == 0) {
-      printf("----------------\n");
       char *res = conv_dec_to_bin(val);
       printf("%llu => \033[32m%s\033[0m\n", strtoull(val, NULL, 10), res);
-      printf("----------------\n");
       free(res);
       return;
     } else {
