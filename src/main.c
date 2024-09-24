@@ -171,33 +171,6 @@ static char *conv_dec_to_bin(const char *dec) {
   return res;
 }
 
-void repl() {
-    char line[256];
-    printf("Type 'q' to quit.\n");
-
-    while (1) {
-        printf(">> ");
-        if (fgets(line, sizeof(line), stdin) == NULL) {
-            perror("Error reading input");
-            continue;
-        }
-
-        line[strcspn(line, "\n")] = 0;
-
-        if (strcmp(line, "q") == 0) {
-            printf("Exiting REPL.\n");
-            break;
-        }
-
-        int res = solve(line);
-        if (res == -1) {
-            printf("Invalid input.\n");
-        } else {
-            printf("%d\n", res);
-        }
-    }
-}
-
 void hex(const char *sub, const char *val) {
     if (strncmp(sub, "dec", 3) == 0) {
       printf("%s => \033[32m%llu\033[0m\n", val, conv_hex_to_dec(val));
@@ -230,6 +203,55 @@ void dec(const char *sub, const char *val) {
   
 }
 
+size_t count_string(char *line) {
+    printf("> ");
+    fgets(line, sizeof(line), stdin);
+    line[strcspn(line, "\n")] = 0;
+    return strlen(line);
+}
+
+void repl() {
+    char line[256];
+    printf("Type 'q' to quit.\n");
+
+    while (1) {
+        printf(">> ");
+        if (fgets(line, sizeof(line), stdin) == NULL) {
+            perror("Error reading input");
+            continue;
+        }
+
+        line[strcspn(line, "\n")] = 0;
+
+        if (strcmp(line, "q") == 0) {
+            printf("Exiting REPL.\n");
+            break;
+        }
+
+        int res = solve(line);
+        if (res == -1) {
+            printf("Invalid input.\n");
+        } else {
+            printf("%d\n", res);
+        }
+    }
+}
+
+void check_color(const char *hex_color) {
+    // Check if the hex_color string starts with '#'
+    if (hex_color[0] != '#' || strlen(hex_color) != 7) {
+        printf("Invalid hex color format. Use #RRGGBB.\n");
+        return;
+    }
+
+    // Extract RGB values from the hex color
+    int r, g, b;
+    sscanf(hex_color + 1, "%02x%02x%02x", &r, &g, &b);
+
+    // Set the text color using ANSI escape codes
+    printf("\033[38;2;%d;%d;%dm%s\033[0m\n", r, g, b, "This is text with your color\n");
+}
+
 int main(int argc, char **argv) {
   if (argc == 1) {
     printf("Usage: <program> <source_base> <target_base> <value>\n");
@@ -251,11 +273,15 @@ int main(int argc, char **argv) {
 
   } else if (strncmp(argv[1], "count", 5) == 0) {
     char line[256];
-    printf("Enter string: ");
-    fgets(line, sizeof(line), stdin);
-    line[strcspn(line, "\n")] = 0;
-    printf("=> \033[32m%lu\033[0m\n", strlen(line));
+    printf("=> \033[32m%lu\033[0m\n", count_string(line));
+    return 0;
+  } else if (strncmp(argv[1], "color", 5) == 0) {
+    check_color(argv[2]);
+    return 0;
+  } else {
+    printf("Unexpected argument: \033[0;31m%s\033[0m\n", argv[1]);
     return 0;
   }
+
   return 0;
 }
